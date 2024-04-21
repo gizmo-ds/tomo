@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+
+target/
+
+.env*
+!.env_example
