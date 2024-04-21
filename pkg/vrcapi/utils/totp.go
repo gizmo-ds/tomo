@@ -28,6 +28,9 @@ func TOTP(secret string, t ...int64) (uint32, error) {
 
 	hash := hmac.New(sha1.New, k)
 	err = binary.Write(hash, binary.BigEndian, _t)
+	if err != nil {
+		return 0, err
+	}
 	h := hash.Sum(nil)
 
 	offset := h[19] & 0x0f
