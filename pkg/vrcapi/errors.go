@@ -24,23 +24,18 @@ func (e RequiresTwoFactorAuthError) Error() string {
 }
 
 func handleAPIResponse(resp *resty.Response, expectedStatusCode int, err error, result *models.BaseResponse) error {
-	if resp.StatusCode() == expectedStatusCode && err == nil {
+	if resp.StatusCode() == expectedStatusCode || err == nil {
 		return nil
 	}
 
 	if result == nil {
-		if err = json.Unmarshal(resp.Body(), &result); err != nil {
-			return err
-		}
+		_ = json.Unmarshal(resp.Body(), &result)
 	}
-	var _errors []error
-	if err != nil {
-		_errors = append(_errors, err)
-	}
-	if result.Error != nil {
+	_errors := []error{err}
+	if result != nil && result.Error != nil {
 		_errors = append(_errors, errors.New(result.Error.Message))
 	}
-	if len(result.RequiresTwoFactorAuth) > 0 {
+	if result != nil && len(result.RequiresTwoFactorAuth) > 0 {
 		_errors = append(_errors, RequiresTwoFactorAuthError(result.RequiresTwoFactorAuth))
 	}
 	return errors.Join(_errors...)

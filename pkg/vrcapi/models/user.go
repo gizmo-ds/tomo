@@ -30,72 +30,108 @@ const (
 )
 
 type (
-	LimitedUser struct {
+	Friend struct {
 		ID                             string        `json:"id"`
-		Username                       string        `json:"username"`
 		DisplayName                    string        `json:"displayName"`
-		Bio                            string        `json:"bio"`
-		BioLinks                       []string      `json:"bioLinks"`
+		Bio                            string        `json:"bio,omitempty"`
+		BioLinks                       []string      `json:"bioLinks,omitempty"`
+		DeveloperType                  DeveloperType `json:"developerType"`
 		CurrentAvatarImageURL          string        `json:"currentAvatarImageUrl"`
 		CurrentAvatarThumbnailImageURL string        `json:"currentAvatarThumbnailImageUrl"`
+		CurrentAvatarTags              []string      `json:"currentAvatarTags"`
+		UserIcon                       string        `json:"userIcon"`
+		ProfilePicOverride             string        `json:"profilePicOverride"`
+		ImageURL                       string        `json:"imageUrl"`
+		LastLogin                      time.Time     `json:"last_login"`
+		LastMobile                     any           `json:"last_mobile"` // XXX: WTF is this?
+		Status                         UserStatus    `json:"status"`
+		StatusDescription              string        `json:"statusDescription"`
 		LastPlatform                   string        `json:"last_platform"`
+		Location                       string        `json:"location"`
 		Tags                           []string      `json:"tags"`
-		DeveloperType                  DeveloperType `json:"developerType"`
+		FriendKey                      string        `json:"friendKey"`
 		IsFriend                       bool          `json:"isFriend"`
 	}
-
+	SearchUser struct {
+		ID                             string        `json:"id"`
+		DisplayName                    string        `json:"displayName"`
+		Bio                            string        `json:"bio,omitempty"`
+		BioLinks                       []string      `json:"bioLinks,omitempty"`
+		CurrentAvatarImageURL          string        `json:"currentAvatarImageUrl"`
+		CurrentAvatarThumbnailImageURL string        `json:"currentAvatarThumbnailImageUrl"`
+		CurrentAvatarTags              []string      `json:"currentAvatarTags"`
+		UserIcon                       string        `json:"userIcon"`
+		ProfilePicOverride             string        `json:"profilePicOverride"`
+		StatusDescription              string        `json:"statusDescription"`
+		Status                         UserStatus    `json:"status"`
+		LastPlatform                   string        `json:"last_platform"`
+		IsFriend                       bool          `json:"isFriend"`
+		Tags                           []string      `json:"tags"`
+		DeveloperType                  DeveloperType `json:"developerType"`
+	}
 	CurrentUser struct {
-		LimitedUser
-		UserIcon                  string               `json:"userIcon"`
-		ProfilePicOverride        string               `json:"profilePicOverride"`
-		StatusDescription         string               `json:"statusDescription"`
-		Badges                    []UserBadge          `json:"badges"`
-		PastDisplayNames          []PastDisplayName    `json:"pastDisplayNames"`
-		HasEmail                  bool                 `json:"hasEmail"`
-		HasPendingEmail           bool                 `json:"hasPendingEmail"`
-		ObfuscatedEmail           string               `json:"obfuscatedEmail"`
-		ObfuscatedPendingEmail    string               `json:"obfuscatedPendingEmail"`
-		EmailVerified             bool                 `json:"emailVerified"`
-		HasBirthday               bool                 `json:"hasBirthday"`
-		HideContentFilterSettings bool                 `json:"hideContentFilterSettings"`
-		Unsubscribe               bool                 `json:"unsubscribe"`
-		StatusHistory             []string             `json:"statusHistory"`
-		StatusFirstTime           bool                 `json:"statusFirstTime"`
-		Friends                   []string             `json:"friends"`
-		FriendGroupNames          []string             `json:"friendGroupNames"`
-		UserLanguage              string               `json:"userLanguage"`
-		UserLanguageCode          string               `json:"userLanguageCode"`
-		CurrentAvatarTags         []string             `json:"currentAvatarTags"`
-		CurrentAvatar             string               `json:"currentAvatar"`
-		CurrentAvatarAssetURL     string               `json:"currentAvatarAssetUrl"`
-		FallbackAvatar            string               `json:"fallbackAvatar"`
-		AccountDeletionDate       string               `json:"accountDeletionDate"`
-		AccountDeletionLog        []AccountDeletionLog `json:"accountDeletionLog"`
-		AcceptedTOSVersion        int                  `json:"acceptedTOSVersion"`
-		AcceptedPrivacyVersion    int                  `json:"acceptedPrivacyVersion"`
-		SteamID                   string               `json:"steamId"`
-		SteamDetails              SteamDetails         `json:"steamDetails"`
-		GoogleID                  string               `json:"googleId"`
-		GoogleDetails             struct{}             `json:"googleDetails"`
-		OculusID                  string               `json:"oculusId"`
-		PicoID                    string               `json:"picoId"`
-		ViveID                    string               `json:"viveId"`
-		HasLoggedInFromClient     bool                 `json:"hasLoggedInFromClient"`
-		HomeLocation              string               `json:"homeLocation"`
-		TwoFactorAuthEnabled      bool                 `json:"twoFactorAuthEnabled"`
-		TwoFactorAuthEnabledDate  time.Time            `json:"twoFactorAuthEnabledDate"`
-		UpdatedAt                 time.Time            `json:"updated_at"`
-		State                     string               `json:"state"`
-		LastLogin                 time.Time            `json:"last_login"`
-		AllowAvatarCopying        bool                 `json:"allowAvatarCopying"`
-		Status                    string               `json:"status"`
-		DateJoined                string               `json:"date_joined"`
-		FriendKey                 string               `json:"friendKey"`
-		LastActivity              time.Time            `json:"last_activity"`
-		OnlineFriends             []string             `json:"onlineFriends"`
-		ActiveFriends             []string             `json:"activeFriends"`
-		Presence                  UserPresence         `json:"presence"`
-		OfflineFriends            []string             `json:"offlineFriends"`
+		ID                             string               `json:"id"`
+		DisplayName                    string               `json:"displayName"`
+		Bio                            string               `json:"bio,omitempty"`
+		BioLinks                       []string             `json:"bioLinks,omitempty"`
+		DeveloperType                  DeveloperType        `json:"developerType"`
+		CurrentAvatarImageURL          string               `json:"currentAvatarImageUrl"`
+		CurrentAvatarThumbnailImageURL string               `json:"currentAvatarThumbnailImageUrl"`
+		CurrentAvatarTags              []string             `json:"currentAvatarTags"`
+		UserIcon                       string               `json:"userIcon"`
+		ProfilePicOverride             string               `json:"profilePicOverride"`
+		ImageURL                       string               `json:"imageUrl"`
+		LastLogin                      time.Time            `json:"last_login"`
+		LastMobile                     any                  `json:"last_mobile"` // XXX: WTF is this?
+		Status                         UserStatus           `json:"status"`
+		StatusDescription              string               `json:"statusDescription"`
+		LastPlatform                   string               `json:"last_platform"`
+		Location                       string               `json:"location"`
+		Tags                           []string             `json:"tags"`
+		FriendKey                      string               `json:"friendKey"`
+		IsFriend                       bool                 `json:"isFriend"`
+		Badges                         []UserBadge          `json:"badges"`
+		PastDisplayNames               []PastDisplayName    `json:"pastDisplayNames"`
+		HasEmail                       bool                 `json:"hasEmail"`
+		HasPendingEmail                bool                 `json:"hasPendingEmail"`
+		ObfuscatedEmail                string               `json:"obfuscatedEmail"`
+		ObfuscatedPendingEmail         string               `json:"obfuscatedPendingEmail"`
+		EmailVerified                  bool                 `json:"emailVerified"`
+		HasBirthday                    bool                 `json:"hasBirthday"`
+		HideContentFilterSettings      bool                 `json:"hideContentFilterSettings"`
+		Unsubscribe                    bool                 `json:"unsubscribe"`
+		StatusHistory                  []string             `json:"statusHistory"`
+		StatusFirstTime                bool                 `json:"statusFirstTime"`
+		Friends                        []string             `json:"friends"`
+		FriendGroupNames               []string             `json:"friendGroupNames"`
+		UserLanguage                   string               `json:"userLanguage"`
+		UserLanguageCode               string               `json:"userLanguageCode"`
+		CurrentAvatar                  string               `json:"currentAvatar"`
+		CurrentAvatarAssetURL          string               `json:"currentAvatarAssetUrl"`
+		AccountDeletionDate            string               `json:"accountDeletionDate"`
+		AccountDeletionLog             []AccountDeletionLog `json:"accountDeletionLog"`
+		AcceptedTOSVersion             int                  `json:"acceptedTOSVersion"`
+		AcceptedPrivacyVersion         int                  `json:"acceptedPrivacyVersion"`
+		SteamID                        string               `json:"steamId"`
+		SteamDetails                   SteamDetails         `json:"steamDetails"`
+		GoogleID                       string               `json:"googleId"`
+		GoogleDetails                  struct{}             `json:"googleDetails"`
+		OculusID                       string               `json:"oculusId"`
+		PicoID                         string               `json:"picoId"`
+		ViveID                         string               `json:"viveId"`
+		HasLoggedInFromClient          bool                 `json:"hasLoggedInFromClient"`
+		HomeLocation                   string               `json:"homeLocation"`
+		TwoFactorAuthEnabled           bool                 `json:"twoFactorAuthEnabled"`
+		TwoFactorAuthEnabledDate       time.Time            `json:"twoFactorAuthEnabledDate"`
+		UpdatedAt                      time.Time            `json:"updated_at"`
+		State                          string               `json:"state"`
+		AllowAvatarCopying             bool                 `json:"allowAvatarCopying"`
+		DateJoined                     string               `json:"date_joined"`
+		LastActivity                   time.Time            `json:"last_activity"`
+		OnlineFriends                  []string             `json:"onlineFriends"`
+		ActiveFriends                  []string             `json:"activeFriends"`
+		Presence                       UserPresence         `json:"presence"`
+		OfflineFriends                 []string             `json:"offlineFriends"`
 	}
 
 	UserBadge struct {
@@ -153,25 +189,5 @@ type (
 		Status              string        `json:"status"`
 		DebugFlag           string        `json:"debugflag"`
 		CurrentAvatarTags   string        `json:"currentAvatarTags"`
-	}
-
-	Friend struct {
-		ID                string     `json:"id"`
-		DisplayName       string     `json:"displayName"`
-		Status            UserStatus `json:"status"`
-		StatusDescription string     `json:"statusDescription"`
-		Bio               string     `json:"bio"`
-		// BioLinks           []string      `json:"bioLinks"`
-		Location                       string        `json:"location"`
-		UserIcon                       string        `json:"userIcon"`
-		Tags                           []string      `json:"tags"`
-		DeveloperType                  DeveloperType `json:"developerType"`
-		ProfilePicOverride             string        `json:"profilePicOverride"`
-		IsFriend                       bool          `json:"isFriend"`
-		FriendKey                      string        `json:"friendKey"`
-		LastPlatform                   string        `json:"last_platform"`
-		FallbackAvatar                 string        `json:"fallbackAvatar"`
-		CurrentAvatarImageURL          string        `json:"currentAvatarImageUrl"`
-		CurrentAvatarThumbnailImageURL string        `json:"currentAvatarThumbnailImageUrl"`
 	}
 )

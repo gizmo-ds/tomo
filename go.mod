@@ -5,9 +5,9 @@ go 1.22
 require (
 	github.com/go-resty/resty/v2 v2.12.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lmittmann/tint v1.0.4
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.22.0
+	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f
 )
 
 require (

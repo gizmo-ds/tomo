@@ -18,6 +18,7 @@ import (
 var (
 	ErrNoCookieJar        = errors.New("no cookie jar")
 	ErrAuthCookieNotFound = errors.New("auth cookie not found")
+	ErrRequestFailed      = errors.New("request failed")
 )
 
 type common struct {
@@ -36,6 +37,7 @@ type VRCAPI struct {
 	*common
 
 	AuthAPI
+	UserAPI
 }
 
 func New(opts ...Option) *VRCAPI {
@@ -46,6 +48,7 @@ func New(opts ...Option) *VRCAPI {
 	api := &VRCAPI{
 		common:  options,
 		AuthAPI: &authAPI{common: options},
+		UserAPI: &userAPI{common: options},
 	}
 	return api
 }
