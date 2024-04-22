@@ -72,6 +72,7 @@ type (
 	CurrentUser struct {
 		ID                             string               `json:"id"`
 		DisplayName                    string               `json:"displayName"`
+		Username                       string               `json:"username"`
 		Bio                            string               `json:"bio,omitempty"`
 		BioLinks                       []string             `json:"bioLinks,omitempty"`
 		DeveloperType                  DeveloperType        `json:"developerType"`

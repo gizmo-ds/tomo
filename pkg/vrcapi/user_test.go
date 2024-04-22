@@ -20,10 +20,7 @@ func TestUserAPI_Friends(t *testing.T) {
 	if authCookie == "" {
 		t.Skip("VRC_AUTH_COOKIE not set")
 	}
-	currentUser, err := api.AuthAPI.LoginWithAuthCookie(authCookie)
-	require.NoError(t, err)
-
-	t.Logf("Current user: %s", currentUser.DisplayName)
+	api.SetAuthCookie(authCookie)
 
 	friends, err := api.UserAPI.Friends(-1, 0, false)
 	require.NoError(t, err)
@@ -36,12 +33,21 @@ func TestUserAPI_Search(t *testing.T) {
 	if authCookie == "" {
 		t.Skip("VRC_AUTH_COOKIE not set")
 	}
-	currentUser, err := api.AuthAPI.LoginWithAuthCookie(authCookie)
-	require.NoError(t, err)
-
-	t.Logf("Current user: %s", currentUser.DisplayName)
+	api.SetAuthCookie(authCookie)
 
 	users, err := api.UserAPI.Search("Gizmo", -1, 0)
 	require.NoError(t, err)
 	t.Log(users)
+}
+
+func TestUserAPI_CurrentUser(t *testing.T) {
+	authCookie := os.Getenv("VRC_AUTH_COOKIE")
+	if authCookie == "" {
+		t.Skip("VRC_AUTH_COOKIE not set")
+	}
+	api.SetAuthCookie(authCookie)
+
+	currentUser, err := api.UserAPI.CurrentUser()
+	require.NoError(t, err)
+	require.Equal(t, currentUser.Username, os.Getenv("VRC_USERNAME"))
 }

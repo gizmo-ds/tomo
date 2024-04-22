@@ -10,6 +10,7 @@ package vrcapi
 
 import (
 	"errors"
+	"net/http"
 	"net/url"
 
 	"github.com/go-resty/resty/v2"
@@ -36,8 +37,8 @@ func defaultOptions() *common {
 type VRCAPI struct {
 	*common
 
-	AuthAPI
-	UserAPI
+	AuthAPI AuthAPI
+	UserAPI UserAPI
 }
 
 func New(opts ...Option) *VRCAPI {
@@ -73,4 +74,8 @@ func (c *common) AuthCookie() (string, error) {
 		}
 	}
 	return "", ErrAuthCookieNotFound
+}
+
+func (c *common) SetAuthCookie(cookie string) {
+	c.httpClient.SetCookie(&http.Cookie{Name: "auth", Value: cookie})
 }

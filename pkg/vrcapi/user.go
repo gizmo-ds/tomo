@@ -20,13 +20,22 @@ import (
 type UserAPI interface {
 	Friends(n, offset int, offline bool) ([]models.Friend, error)
 	Search(keyword string, n, offset int) ([]models.SearchUser, error)
+	CurrentUser() (models.CurrentUser, error)
 }
 
 type userAPI struct {
 	*common
 }
 
-func (u *userAPI) CurrentUser() {
+func (u *userAPI) CurrentUser() (models.CurrentUser, error) {
+	var result models.CurrentUserResponse
+	resp, err := u.httpClient.R().
+		SetResult(&result).
+		Get("/auth/user")
+	if err != nil {
+		return result.CurrentUser, err
+	}
+	return result.CurrentUser, handleAPIResponse(resp, http.StatusOK, ErrRequestFailed, result.BaseResponse)
 }
 
 func (u *userAPI) Friends(n, offset int, offline bool) ([]models.Friend, error) {
