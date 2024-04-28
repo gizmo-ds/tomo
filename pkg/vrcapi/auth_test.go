@@ -16,7 +16,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gizmo-ds/tomo/pkg/vrcapi/utils"
+	"github.com/gizmo-ds/tomo/pkg/otp"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,7 +29,7 @@ func TestAuthAPI_Login(t *testing.T) {
 	var err2fa RequiresTwoFactorAuthError
 	if errors.As(err, &err2fa) && slices.Contains(err2fa, "totp") {
 		totpSecret := strings.ToUpper(strings.ReplaceAll(os.Getenv("VRC_TOTP_SECRET"), " ", ""))
-		code, err := utils.TOTP(totpSecret)
+		code, err := otp.TOTP(totpSecret)
 		require.NoError(t, err)
 		err = api.AuthAPI.VerifyTwoFactorAuthTOTP(strconv.Itoa(int(code)))
 		require.NoError(t, err)

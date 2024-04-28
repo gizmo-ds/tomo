@@ -13,8 +13,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gizmo-ds/tomo/pkg/utils"
 	"github.com/gizmo-ds/tomo/pkg/vrcapi/models"
-	"github.com/gizmo-ds/tomo/pkg/vrcapi/utils"
 )
 
 type UserAPI interface {
