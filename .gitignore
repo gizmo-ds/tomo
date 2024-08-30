@@ -1,7 +1,11 @@
-.idea/
-.vscode/
+.idea
+.vscode
+!.vscode/extensions.json
+.task
 
-target/
+target
 
 .env*
 !.env_example
+
+appdata

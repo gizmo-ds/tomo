@@ -1,0 +1,214 @@
+version: '3'
+
+vars:
+  APP_NAME: "tomo"
+  BIN_DIR: "target"
+  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  PACKAGE_NAME: "github.com/gizmo-ds/tomo"
+  VERSION:
+    sh: git describe --tags --always
+  VERSION_FLAGS: '-X "{{.PACKAGE_NAME}}/cmd/tomo-gui/app.Version={{.VERSION}}"'
+
+tasks:
+  build:
+    summary: Build the application
+    cmds:
+      - task: build:{{OS}}
+
+  build:prod:
+    summary: Builds the application for production
+    cmds:
+      - task: build:{{OS}}:prod:{{ARCH}}
+      - task: build:{{OS}}:upx
+
+  build:upx:
+    summary: Compresses the Windows binary
+    vars:
+      UPX_FILE: '{{.BIN_DIR}}/{{.APP_NAME}}'
+    cmds:
+      - upx {{.FILE}}
+
+  ## ------> Windows <-------
+
+  build:windows:
+    summary: Builds the application for Windows
+    deps:
+      - task: go:mod:tidy
+      - task: build:frontend
+        vars:
+          BUILD_FLAGS: '{{.BUILD_FLAGS}}'
+      - task: generate:icons
+      - task: generate:syso
+        vars:
+          ARCH: '{{.ARCH}}'
+    dir: cmd/tomo-gui
+    cmds:
+      - go build {{.BUILD_FLAGS}} -o ../../{{.BIN_DIR}}/{{.APP_NAME}}.exe
+    vars:
+      BUILD_FLAGS: '{{if eq .PRODUCTION "true"}}-tags production -trimpath -ldflags="-w -s -H windowsgui {{.VERSION_FLAGS}}"{{else}}-gcflags=all="-l"{{end}}'
+    env:
+      GOOS: windows
+      CGO_ENABLED: 0
+      GOARCH: '{{.ARCH | default ARCH}}'
+      PRODUCTION: '{{.PRODUCTION | default "false"}}'
+
+  build:windows:upx:
+    summary: Compresses the Windows binary
+    cmds:
+      - task: build:upx
+        vars:
+          FILE: '{{.BIN_DIR}}/{{.APP_NAME}}.exe'
+
+  build:windows:prod:amd64:
+    summary: Creates a production build of the application for Windows
+    cmds:
+      - task: build:windows
+        vars:
+          ARCH: amd64
+          PRODUCTION: "true"
+
+  build:windows:debug:amd64:
+    summary: Creates a debug build of the application for Windows
+    cmds:
+      - task: build:windows
+        vars:
+          ARCH: amd64
+
+  build:windows:prod:arm64:
+    summary: Creates a production build of the application for Windows
+    cmds:
+      - task: build:windows
+        vars:
+          ARCH: arm64
+          PRODUCTION: "true"
+
+  build:windows:debug:arm64:
+    summary: Creates a debug build of the application for Windows
+    cmds:
+      - task: build:windows
+        vars:
+          ARCH: arm64
+
+  ## -------------------------- Misc -------------------------- ##
+
+  build:frontend:
+    summary: Build the frontend project
+    dir: frontend
+    sources:
+      - "**/*"
+    generates:
+      - dist/*
+    deps:
+      - task: install:frontend:deps
+      - task: generate:constants
+      - task: generate:bindings
+        vars:
+          BUILD_FLAGS: '{{.BUILD_FLAGS}}'
+    cmds:
+      - pnpm run build --emptyOutDir
+
+  go:mod:tidy:
+    summary: Runs `go mod tidy`
+    internal: true
+    generates:
+      - go.sum
+    sources:
+      - go.mod
+    cmds:
+      - go mod tidy
+
+  generate:icons:
+    summary: Generates Windows `.ico` and Mac `.icns` files from an image
+    dir: build
+    sources:
+      - "appicon.png"
+    generates:
+      - "icons.icns"
+      - "icons.ico"
+    cmds:
+      - wails3 generate icons -input appicon.png
+
+  generate:syso:
+    summary: Generates Windows `.syso` file
+    dir: build
+    sources:
+      - icon.ico
+      - wails.exe.manifest
+      - info.json
+    generates:
+      - ../cmd/tomo-gui/wails.syso
+    cmds:
+      - wails3 generate syso -arch {{.ARCH}} -icon icon.ico -manifest wails.exe.manifest -info info.json -out ../cmd/tomo-gui/wails.syso
+    vars:
+      ARCH: '{{.ARCH | default ARCH}}'
+
+  generate:bindings:
+    summary: Generates bindings for the frontend
+    sources:
+      - "**/*.go"
+      - go.mod
+      - go.sum
+    generates:
+      - "frontend/bindings/**/*"
+    cmds:
+      - wails3 generate bindings -f '{{.BUILD_FLAGS}}' ./cmd/tomo-gui/services/..
+
+  generate:constants:
+    summary: Generate JS constants from Go
+    sources:
+      - "./cmd/tomo-gui/app/constants.go"
+    generates:
+      - "./frontend/src/constants.js"
+    cmds:
+      - wails3 generate constants -f ./cmd/tomo-gui/app/constants.go -o ./frontend/src/constants.js
+
+  install:frontend:deps:
+    summary: Install frontend dependencies
+    dir: frontend
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/*
+    preconditions:
+      - sh: pnpm version
+        msg: "pnpm is required to install frontend dependencies. Please install it from https://pnpm.io"
+    cmds:
+      - pnpm install
+
+  ## ----------------------- dev ----------------------- #
+
+  run:
+    summary: Run the application
+    cmds:
+      - task: run:{{OS}}
+
+  run:windows:
+    summary: Run the application
+    cmds:
+      - ./{{.BIN_DIR}}/{{.APP_NAME}}.exe
+
+  dev:frontend:
+    summary: Runs the frontend in development mode
+    dir: frontend
+    deps:
+      - task: install:frontend:deps
+      - task: generate:constants
+      - task: generate:bindings
+        vars:
+          BUILD_FLAGS: '{{.BUILD_FLAGS}}'
+    cmds:
+      - pnpm run dev --port {{.VITE_PORT}} --strictPort
+
+  dev:
+    summary: Run the application in development mode
+    env:
+      WAILS_VITE_PORT: '{{.VITE_PORT}}'
+      FRONTEND_DEVSERVER_URL: 'http://localhost:{{.VITE_PORT}}'
+    cmds:
+      - task: build
+      - task: run:{{OS}}
+
+  test:version:
+    cmds:
+      - echo "Version {{.VERSION}}"

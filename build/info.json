@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.1.0"
+	},
+	"info": {
+		"0000": {
+			"ProductVersion": "0.1.0",
+			"CompanyName": "https://github.com/gizmo-ds",
+			"FileDescription": "tomo gui",
+			"LegalCopyright": "© 2024, Gizmo",
+			"ProductName": "tomo",
+			"Comments": "https://github.com/gizmo-ds"
+		}
+	}
+}

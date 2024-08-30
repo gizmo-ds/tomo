@@ -6,20 +6,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package main
+package services
 
-/*
-#include <stdlib.h>
+import "github.com/wailsapp/wails/v3/pkg/application"
 
-int sum(int a, int b) {
-    return a + b;
-}
-*/
-import "C"
-import "fmt"
-
-func main() {
-	a, b := 3, 5
-	result := C.sum(C.int(a), C.int(b))
-	fmt.Printf("%d + %d = %d\n", a, b, result)
+func Services() []application.Service {
+	return []application.Service{
+		application.NewService(&AppService{}),
+	}
 }
