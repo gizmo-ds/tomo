@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/duke-git/lancet/v2/condition"
 	"github.com/gizmo-ds/tomo/pkg/utils"
 	"github.com/gizmo-ds/tomo/pkg/vrcapi/models"
 )
@@ -44,7 +45,7 @@ func (u *userAPI) Friends(n, offset int, offline bool) ([]models.Friend, error) 
 		SetResult(&result).
 		SetQueryParam("n", strconv.Itoa(utils.Clamp(n, 1, 100, 60))).
 		SetQueryParam("offset", strconv.Itoa(utils.Clamp(offset, 0, math.MaxInt, 0))).
-		SetQueryParam("offline", utils.Bool2Str(offline))
+		SetQueryParam("offline", condition.TernaryOperator(offline, "true", "false"))
 	if offline {
 		req.SetQueryParam("offline", "true")
 	}
