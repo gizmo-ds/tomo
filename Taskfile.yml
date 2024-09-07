@@ -7,7 +7,7 @@ vars:
   PACKAGE_NAME: "github.com/gizmo-ds/tomo"
   VERSION:
     sh: git describe --tags --always
-  VERSION_FLAGS: '-X "{{.PACKAGE_NAME}}/cmd/tomo-gui/app.Version={{.VERSION}}"'
+  VERSION_FLAGS: "-X '{{.PACKAGE_NAME}}/cmd/tomo-gui/app.Version={{.VERSION}}'"
 
 tasks:
   build:
@@ -22,9 +22,10 @@ tasks:
       - task: build:{{OS}}:upx
 
   build:upx:
-    summary: Compresses the Windows binary
+    summary: Compresses the binary
     vars:
-      UPX_FILE: '{{.BIN_DIR}}/{{.APP_NAME}}'
+      DEFAULT_FILE: '{{.BIN_DIR}}/{{.APP_NAME}}'
+      FILE: '{{.FILE | default .DEFAULT_FILE}}'
     cmds:
       - upx {{.FILE}}
 
@@ -88,6 +89,42 @@ tasks:
       - task: build:windows
         vars:
           ARCH: arm64
+
+  ## ------> Linux <-------
+
+  build:linux:
+    summary: Builds the application for Linux
+    deps:
+      - task: go:mod:tidy
+      - task: build:frontend
+        vars:
+          BUILD_FLAGS: '{{.BUILD_FLAGS}}'
+      - task: generate:icons
+        vars:
+          ARCH: '{{.ARCH}}'
+    dir: cmd/tomo-gui
+    cmds:
+      - go build {{.BUILD_FLAGS}} -o ../../{{.BIN_DIR}}/{{.APP_NAME}}
+    vars:
+      BUILD_FLAGS: '{{if eq .PRODUCTION "true"}}-tags production -trimpath -ldflags="-w -s {{.VERSION_FLAGS}}"{{else}}-gcflags=all="-l"{{end}}'
+    env:
+      GOOS: linux
+      CGO_ENABLED: 1
+      GOARCH: '{{.ARCH | default ARCH}}'
+      PRODUCTION: '{{.PRODUCTION | default "false"}}'
+
+  build:linux:upx:
+    summary: Compresses the Linux binary
+    cmds:
+      - task: build:upx
+
+  build:linux:prod:amd64:
+    summary: Creates a production build of the application for Linux
+    cmds:
+      - task: build:linux
+        vars:
+          ARCH: amd64
+          PRODUCTION: "true"
 
   ## -------------------------- Misc -------------------------- ##
 
@@ -187,6 +224,11 @@ tasks:
     summary: Run the application
     cmds:
       - ./{{.BIN_DIR}}/{{.APP_NAME}}.exe
+
+  run:linux:
+    summary: Run the application
+    cmds:
+      - ./{{.BIN_DIR}}/{{.APP_NAME}}
 
   dev:frontend:
     summary: Runs the frontend in development mode
