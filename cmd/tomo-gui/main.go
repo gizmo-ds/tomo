@@ -14,6 +14,8 @@ import (
 	"os"
 	"path/filepath"
 
+	_ "github.com/gizmo-ds/tomo/cmd/tomo-gui/app"
+
 	"github.com/duke-git/lancet/v2/condition"
 	"github.com/duke-git/lancet/v2/xerror"
 	"github.com/gizmo-ds/tomo/cmd/tomo-gui/app"
