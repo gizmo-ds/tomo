@@ -35,7 +35,7 @@ func main() {
 	a.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
 		Title: app.Name,
 		BackgroundColour: condition.TernaryOperator(
-			app.IsDarkMode(),
+			app.IsCurrentlyDarkMode(),
 			application.NewRGB(0x10, 0x10, 0x14),
 			application.NewRGB(0xff, 0xff, 0xff)),
 		URL:               "/",

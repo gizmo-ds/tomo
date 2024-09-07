@@ -12,6 +12,6 @@ package app
 
 import "github.com/wailsapp/wails/v3/pkg/w32"
 
-func IsDarkMode() bool {
+func IsCurrentlyDarkMode() bool {
 	return w32.IsCurrentlyDarkMode()
 }

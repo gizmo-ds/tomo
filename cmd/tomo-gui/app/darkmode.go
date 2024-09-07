@@ -1,4 +1,4 @@
-//go:build !windows
+//go:build darwin
 
 /*
  * Copyright (c) 2024 Gizmo.
@@ -10,6 +10,6 @@
 
 package app
 
-func IsDarkMode() bool {
+func IsCurrentlyDarkMode() bool {
 	return false
 }
