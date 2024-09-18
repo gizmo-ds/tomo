@@ -12,12 +12,10 @@ import (
 	"embed"
 	"log/slog"
 	"os"
-	"path/filepath"
 
 	_ "github.com/gizmo-ds/tomo/cmd/tomo-gui/app"
 
 	"github.com/duke-git/lancet/v2/condition"
-	"github.com/duke-git/lancet/v2/xerror"
 	"github.com/gizmo-ds/tomo/cmd/tomo-gui/app"
 	"github.com/gizmo-ds/tomo/cmd/tomo-gui/services"
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -27,14 +25,21 @@ import (
 var assets embed.FS
 
 func main() {
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+
 	a := application.New(application.Options{
 		Name:     app.Name,
 		Services: services.Services(),
-		Assets:   application.AssetOptions{Handler: application.AssetFileServerFS(assets)},
-		Windows:  application.WindowsOptions{WebviewUserDataPath: xerror.TryUnwrap(filepath.Abs("./appdata"))},
+		Assets: application.AssetOptions{
+			Handler:        application.AssetFileServerFS(assets),
+			Middleware:     app.CacheMiddlewareHandler,
+			DisableLogging: true,
+		},
+		Windows: application.WindowsOptions{WebviewUserDataPath: app.WebviewUserDataPath()},
+		Linux:   application.LinuxOptions{ProgramName: app.Name},
 	})
 
-	a.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+	w := a.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
 		Title: app.Name,
 		BackgroundColour: condition.TernaryOperator(
 			app.IsCurrentlyDarkMode(),
@@ -45,6 +50,10 @@ func main() {
 		Centered:          true,
 		Width:             900,
 		Height:            600,
+	})
+	services.MainWindow = w
+	a.OnShutdown(func() {
+		app.Shutdown()
 	})
 
 	if err := a.Run(); err != nil {

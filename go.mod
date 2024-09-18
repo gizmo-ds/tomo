@@ -4,11 +4,13 @@ go 1.22.6
 
 require (
 	github.com/duke-git/lancet/v2 v2.3.2
+	github.com/galdor/go-thumbhash v1.0.0
 	github.com/go-resty/resty/v2 v2.15.0
 	github.com/jaypipes/ghw v0.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
 	github.com/wailsapp/wails/v3 v3.0.0-alpha.7
+	go.etcd.io/bbolt v1.3.11
 	go.uber.org/multierr v1.11.0
 	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 )

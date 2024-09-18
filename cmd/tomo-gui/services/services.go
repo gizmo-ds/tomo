@@ -10,8 +10,11 @@ package services
 
 import "github.com/wailsapp/wails/v3/pkg/application"
 
+var MainWindow application.Window
+
 func Services() []application.Service {
 	return []application.Service{
 		application.NewService(&AppService{}),
+		application.NewService(&FileService{}),
 	}
 }
