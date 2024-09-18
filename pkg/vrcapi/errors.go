@@ -15,6 +15,7 @@ import (
 
 	"github.com/gizmo-ds/tomo/pkg/vrcapi/models"
 	"github.com/go-resty/resty/v2"
+	"go.uber.org/multierr"
 )
 
 type RequiresTwoFactorAuthError []string
@@ -23,19 +24,19 @@ func (e RequiresTwoFactorAuthError) Error() string {
 	return fmt.Sprintf("requires two-factor authentication: %v", []string(e))
 }
 
-func handleAPIResponse(resp *resty.Response, expectedStatusCode int, err error, result *models.BaseResponse) error {
+func handleAPIResponse(resp *resty.Response, expectedStatusCode int, failedError error, result *models.BaseResponse) error {
 	if result == nil {
 		_ = json.Unmarshal(resp.Body(), &result)
 	}
-	_errors := []error{err}
+	var err error
 	if result != nil && result.Error != nil {
-		_errors = append(_errors, errors.New(result.Error.Message))
+		err = multierr.Append(err, errors.New(result.Error.Message))
 	}
 	if result != nil && len(result.RequiresTwoFactorAuth) > 0 {
-		_errors = append(_errors, RequiresTwoFactorAuthError(result.RequiresTwoFactorAuth))
+		err = multierr.Append(err, RequiresTwoFactorAuthError(result.RequiresTwoFactorAuth))
 	}
-	if len(_errors) == 1 && resp.StatusCode() == expectedStatusCode || err == nil {
-		return nil
+	if resp.StatusCode() != expectedStatusCode || failedError == nil {
+		err = multierr.Append(err, failedError)
 	}
-	return errors.Join(_errors...)
+	return err
 }
