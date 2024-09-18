@@ -34,10 +34,19 @@ func WithUserAgent(userAgent string) Option {
 	})
 }
 func WithHTTPClient(httpClient *resty.Client) Option {
-	return newFuncOption(func(o *common) { o.httpClient = httpClient })
+	return newFuncOption(func(o *common) {
+		o.httpClient = httpClient
+		o.httpClient.SetDebug(o.debugMode)
+	})
 }
 func WithProxy(proxy string) Option {
 	return newFuncOption(func(o *common) {
 		o.httpClient.SetProxy(proxy)
+	})
+}
+func WithDebugMode(debugMode bool) Option {
+	return newFuncOption(func(o *common) {
+		o.debugMode = debugMode
+		o.httpClient.SetDebug(debugMode)
 	})
 }

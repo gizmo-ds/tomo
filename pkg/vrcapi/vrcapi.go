@@ -24,6 +24,7 @@ var (
 
 type common struct {
 	httpClient *resty.Client
+	debugMode  bool
 }
 
 func defaultOptions() *common {
@@ -78,4 +79,9 @@ func (c *common) AuthCookie() (string, error) {
 
 func (c *common) SetAuthCookie(cookie string) {
 	c.httpClient.SetCookie(&http.Cookie{Name: "auth", Value: cookie})
+}
+
+func (c *common) SetDebugMode(debug bool) {
+	c.debugMode = debug
+	c.httpClient.SetDebug(debug)
 }
