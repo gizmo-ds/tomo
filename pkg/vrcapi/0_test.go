@@ -9,6 +9,7 @@
 package vrcapi
 
 import (
+	"os"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -18,8 +19,9 @@ var api *VRCAPI
 
 func TestMain(m *testing.M) {
 	_ = godotenv.Load()
-	api = New(
-		WithProxy("http://localhost:10809"),
-	)
+	api = New()
+	if proxy := os.Getenv("PROXY_URL"); proxy != "" {
+		api.SetProxy(proxy)
+	}
 	m.Run()
 }
