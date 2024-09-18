@@ -31,11 +31,14 @@ type AuthAPI interface {
 	// It is useful for systems that maintain long-lived sessions or where minimizing re-authentication is desired.
 	LoginWithAuthCookie(cookie string) (models.CurrentUser, error)
 
-	// VerifyTwoFactorAuthTOTP verifies the TOTP code provided for two-factor authentication.
-	VerifyTwoFactorAuthTOTP(code string) error
+	// Verify2FAWithTOTP verifies the TOTP code provided for two-factor authentication.
+	Verify2FAWithTOTP(code string) error
 
-	// VerifyTwoFactorAuthEmail verifies the email verification code provided for two-factor authentication.
-	VerifyTwoFactorAuthEmail(code string) error
+	// Verify2FAWithEmail verifies the email verification code provided for two-factor authentication.
+	Verify2FAWithEmail(code string) error
+
+	// Verify2FAWithRecoveryCode verifies the recovery code provided for two-factor authentication.
+	Verify2FAWithRecoveryCode(code string) error
 
 	// Logout terminates the user's session and clears any session-related data.
 	Logout() error
@@ -70,7 +73,7 @@ func (a *authAPI) LoginWithAuthCookie(authCookie string) (models.CurrentUser, er
 	return result.CurrentUser, handleAPIResponse(resp, http.StatusOK, ErrLoginFail, result.BaseResponse)
 }
 
-func (a *authAPI) VerifyTwoFactorAuthTOTP(code string) error {
+func (a *authAPI) Verify2FAWithTOTP(code string) error {
 	var result models.VerifyTwoFactorAuthResponse
 	resp, err := a.httpClient.R().
 		SetBody(map[string]any{"code": code}).
@@ -88,12 +91,30 @@ func (a *authAPI) VerifyTwoFactorAuthTOTP(code string) error {
 	return nil
 }
 
-func (a *authAPI) VerifyTwoFactorAuthEmail(code string) error {
+func (a *authAPI) Verify2FAWithEmail(code string) error {
 	var result models.VerifyTwoFactorAuthResponse
 	resp, err := a.httpClient.R().
 		SetBody(map[string]any{"code": code}).
 		SetResult(&result).
 		Post("/auth/twofactorauth/emailotp/verify")
+	if err != nil {
+		return err
+	}
+	if err = handleAPIResponse(resp, http.StatusOK, ErrVerifyTwoFactorAuthFail, result.BaseResponse); err != nil {
+		return err
+	}
+	if !result.Verified {
+		return ErrVerifyTwoFactorAuthFail
+	}
+	return nil
+}
+
+func (a *authAPI) Verify2FAWithRecoveryCode(code string) error {
+	var result models.VerifyTwoFactorAuthResponse
+	resp, err := a.httpClient.R().
+		SetBody(map[string]any{"code": code}).
+		SetResult(&result).
+		Post("/auth/twofactorauth/otp/verify")
 	if err != nil {
 		return err
 	}

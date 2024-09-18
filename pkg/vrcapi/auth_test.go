@@ -31,7 +31,7 @@ func TestAuthAPI_Login(t *testing.T) {
 		totpSecret := strings.ToUpper(strings.ReplaceAll(os.Getenv("VRC_TOTP_SECRET"), " ", ""))
 		code, err := otp.TOTP(totpSecret)
 		require.NoError(t, err)
-		err = api.AuthAPI.VerifyTwoFactorAuthTOTP(strconv.Itoa(int(code)))
+		err = api.AuthAPI.Verify2FAWithTOTP(strconv.Itoa(int(code)))
 		require.NoError(t, err)
 
 		currentUser, err = api.AuthAPI.Login(username, password)
@@ -55,5 +55,28 @@ func TestAuthAPI_LoginWithAuthCookie(t *testing.T) {
 	currentUser, err := api.AuthAPI.LoginWithAuthCookie(authCookie)
 	require.NoError(t, err)
 
+	t.Logf("Current user: %s", currentUser.DisplayName)
+}
+
+func TestAuthAPI_Verify2FAWithRecoveryCode(t *testing.T) {
+	username, password := os.Getenv("VRC_USERNAME"), os.Getenv("VRC_PASSWORD")
+	if username == "" || password == "" {
+		t.Skip("VRC_USERNAME and VRC_PASSWORD not set")
+	}
+
+	recoveryCode := os.Getenv("VRC_RECOVERY_CODE")
+	if recoveryCode == "" {
+		t.Skip("VRC_RECOVERY_CODE not set")
+	}
+
+	currentUser, err := api.AuthAPI.Login(username, password)
+	var err2fa RequiresTwoFactorAuthError
+	require.ErrorAs(t, err, &err2fa)
+	require.Contains(t, err2fa, "otp")
+	err = api.AuthAPI.Verify2FAWithRecoveryCode(recoveryCode)
+	require.NoError(t, err)
+
+	currentUser, err = api.AuthAPI.Login(username, password)
+	require.NoError(t, err)
 	t.Logf("Current user: %s", currentUser.DisplayName)
 }
