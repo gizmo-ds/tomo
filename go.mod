@@ -1,15 +1,15 @@
 module github.com/gizmo-ds/tomo
 
-go 1.22.4
+go 1.22.6
 
 require (
 	github.com/duke-git/lancet/v2 v2.3.2
-	github.com/go-resty/resty/v2 v2.14.0
+	github.com/go-resty/resty/v2 v2.15.0
 	github.com/jaypipes/ghw v0.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
-	github.com/wailsapp/wails/v3 v3.0.0-alpha.6
-	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e
+	github.com/wailsapp/wails/v3 v3.0.0-alpha.7
+	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 )
 
 require (
@@ -48,15 +48,15 @@ require (
 	github.com/samber/lo v1.38.1 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/skeema/knownhosts v1.2.1 // indirect
-	github.com/wailsapp/go-webview2 v1.0.11 // indirect
+	github.com/wailsapp/go-webview2 v1.0.16 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
-	golang.org/x/mod v0.20.0 // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/mod v0.21.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.23.0 // indirect
-	golang.org/x/tools v0.24.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/tools v0.25.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
