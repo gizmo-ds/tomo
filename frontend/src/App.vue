@@ -22,7 +22,11 @@ const themeOverrides = computed(
 </script>
 
 <template>
-  <n-config-provider :theme-overrides="themeOverrides" :theme="theme">
+  <n-config-provider
+    :theme-overrides="themeOverrides"
+    :theme="theme"
+    :style="{ colorScheme: isDark ? 'dark' : 'light' }"
+  >
     <n-loading-bar-provider>
       <n-notification-provider placement="bottom-right">
         <n-message-provider placement="bottom">
