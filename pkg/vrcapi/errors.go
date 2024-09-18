@@ -24,10 +24,6 @@ func (e RequiresTwoFactorAuthError) Error() string {
 }
 
 func handleAPIResponse(resp *resty.Response, expectedStatusCode int, err error, result *models.BaseResponse) error {
-	if resp.StatusCode() == expectedStatusCode || err == nil {
-		return nil
-	}
-
 	if result == nil {
 		_ = json.Unmarshal(resp.Body(), &result)
 	}
@@ -37,6 +33,9 @@ func handleAPIResponse(resp *resty.Response, expectedStatusCode int, err error, 
 	}
 	if result != nil && len(result.RequiresTwoFactorAuth) > 0 {
 		_errors = append(_errors, RequiresTwoFactorAuthError(result.RequiresTwoFactorAuth))
+	}
+	if len(_errors) == 1 && resp.StatusCode() == expectedStatusCode || err == nil {
+		return nil
 	}
 	return errors.Join(_errors...)
 }
