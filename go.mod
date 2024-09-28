@@ -5,7 +5,7 @@ go 1.22.6
 require (
 	github.com/duke-git/lancet/v2 v2.3.2
 	github.com/galdor/go-thumbhash v1.0.0
-	github.com/go-resty/resty/v2 v2.15.0
+	github.com/go-resty/resty/v2 v2.15.3
 	github.com/jaypipes/ghw v0.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
